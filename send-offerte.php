@@ -1,32 +1,45 @@
 <?php
-// Simple spam protection: only allow POST
+// Only allow POST (block direct access in browser)
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-  http_response_code(405);
-  exit("Method not allowed");
+    http_response_code(405);
+    echo "405 Not Allowed";
+    exit;
 }
 
-// Get values safely
-$naam         = htmlspecialchars($_POST["naam"] ?? "");
-$email        = htmlspecialchars($_POST["email"] ?? "");
-$telefoon     = htmlspecialchars($_POST["telefoon"] ?? "");
-$locatie      = htmlspecialchars($_POST["locatie"] ?? "");
-$soort        = htmlspecialchars($_POST["soort"] ?? "");
-$ruimte       = htmlspecialchars($_POST["ruimte"] ?? "");
-$planning     = htmlspecialchars($_POST["planning"] ?? "");
-$omschrijving = htmlspecialchars($_POST["omschrijving"] ?? "");
-
-// Basic required validation
-if (!$naam || !$email || !$telefoon || !$locatie || !$soort || !$omschrijving) {
-  exit("Er ging iets mis. Vul alle verplichte velden in aub.");
+// Helper to safely read a field
+function field($name) {
+    return htmlspecialchars($_POST[$name] ?? "");
 }
 
-// Where should it go?
-$to = "info@kleurfix.nl"; // <-- change this to your address
+$naam         = field("naam");
+$email        = field("email");
+$telefoon     = field("telefoon");
+$locatie      = field("locatie");
+$soort        = field("soort");
+$ruimte       = field("ruimte");
+$planning     = field("planning");
+$omschrijving = field("omschrijving");
+
+// Basic validation
+if (
+    $naam === "" ||
+    $email === "" ||
+    $telefoon === "" ||
+    $locatie === "" ||
+    $soort === "" ||
+    $omschrijving === ""
+) {
+    echo "Er ging iets mis. Vul alle verplichte velden in aub.";
+    exit;
+}
+
+// TODO: change this to your receiving address
+$to = "info@kleurfix.nl";
 
 $subject = "Nieuwe offerte-aanvraag via de website";
 
-$body = "
-Naam: $naam
+$body =
+"Naam: $naam
 E-mail: $email
 Telefoon: $telefoon
 
@@ -39,17 +52,15 @@ Omschrijving:
 $omschrijving
 ";
 
-// Extra headers so you can reply directly
 $headers = "From: offerte-form <no-reply@kleurfix.nl>\r\n";
 $headers .= "Reply-To: $email\r\n";
 
-// Send mail
+// Try to send mail
 $sent = mail($to, $subject, $body, $headers);
 
 if ($sent) {
-  // Simple thank-you page
-  echo "Bedankt, $naam. We hebben uw aanvraag ontvangen en nemen contact met u op.";
+    echo "Bedankt, $naam. We hebben uw aanvraag ontvangen en nemen zo snel mogelijk contact op.";
 } else {
-  echo "Sorry, verzenden is niet gelukt. U kunt ons ook mailen op $to.";
+    echo "Verzenden is niet gelukt. U kunt ons ook mailen op $to.";
 }
 ?>
