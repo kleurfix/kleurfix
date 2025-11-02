@@ -12,7 +12,7 @@ function field($name) {
 }
 
 $naam         = field("naam");
-$email        = field("email");
+$emailFrom        = field("email");
 $telefoon     = field("telefoon");
 $locatie      = field("locatie");
 $soort        = field("soort");
@@ -34,13 +34,13 @@ if (
 }
 
 // TODO: change this to your receiving address
-$to = "info@kleurfix.nl";
+$mailTo = "info@kleurfix.nl";
 
 $subject = "Nieuwe offerte-aanvraag via de website";
 
 $body =
 "Naam: $naam
-E-mail: $email
+E-mail: $emailFrom
 Telefoon: $telefoon
 
 Locatie klus: $locatie
@@ -52,8 +52,8 @@ Omschrijving:
 $omschrijving
 ";
 
-$headers = "From: offerte-form <no-reply@kleurfix.nl>\r\n";
-$headers .= "Reply-To: $email\r\n";
+$headers = "From: offerte-form <info@kleurfix.nl>\r\n";
+$headers .= "Reply-To: $emailFrom\r\n";
 
 // Try to send mail
 $sent = mail($to, $subject, $body, $headers);
