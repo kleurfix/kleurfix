@@ -1,66 +1,87 @@
 <?php
 // Only allow POST (block direct access in browser)
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    header("Allow: POST");
     http_response_code(405);
-    echo "405 Not Allowed";
+    echo "405 Not Allowed. Use POST.";
     exit;
 }
 
-// Helper to safely read a field
-function field($name) {
-    return htmlspecialchars($_POST[$name] ?? "");
+// Helper to safely read a field and remove CR/LF (prevent header injection)
+function raw_field($name) {
+    return $_POST[$name] ?? "";
+}
+function sanitize_for_header($str) {
+    // remove CR and LF characters which could be used for header injection
+    return trim(preg_replace("/[\r\n]+/", " ", $str));
+}
+function escape_html($str) {
+    return htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 }
 
-$naam         = field("naam");
-$emailFrom        = field("email");
-$telefoon     = field("telefoon");
-$locatie      = field("locatie");
-$soort        = field("soort");
-$ruimte       = field("ruimte");
-$planning     = field("planning");
-$omschrijving = field("omschrijving");
+$naam         = sanitize_for_header(raw_field("naam"));
+$emailFrom    = sanitize_for_header(raw_field("email"));
+$telefoon     = sanitize_for_header(raw_field("telefoon"));
+$locatie      = sanitize_for_header(raw_field("locatie"));
+$soort        = sanitize_for_header(raw_field("soort"));
+$ruimte       = sanitize_for_header(raw_field("ruimte"));
+$planning     = sanitize_for_header(raw_field("planning"));
+$omschrijving = sanitize_for_header(raw_field("omschrijving"));
 
-// Basic validation
-if (
-    $naam === "" ||
-    $email === "" ||
-    $telefoon === "" ||
-    $locatie === "" ||
-    $soort === "" ||
-    $omschrijving === ""
-) {
-    echo "Er ging iets mis. Vul alle verplichte velden in aub.";
+// Basic required check
+$required = [
+    "naam" => $naam,
+    "email" => $emailFrom,
+    "telefoon" => $telefoon,
+    "locatie" => $locatie,
+    "soort" => $soort,
+    "omschrijving" => $omschrijving,
+];
+
+foreach ($required as $fieldName => $value) {
+    if (trim($value) === "") {
+        echo "Er ging iets mis. Vul alle verplichte velden in aub. (Ontbreekt: $fieldName)";
+        exit;
+    }
+}
+
+// Validate email format
+if (!filter_var($emailFrom, FILTER_VALIDATE_EMAIL)) {
+    echo "Ongeldig e-mailadres opgegeven.";
     exit;
 }
 
-// TODO: change this to your receiving address
+// Receiving address - change to your real address
 $mailTo = "info@kleurfix.nl";
-
 $subject = "Nieuwe offerte-aanvraag via de website";
 
-$body =
-"Naam: $naam
-E-mail: $emailFrom
-Telefoon: $telefoon
+// Build body (use the original raw values for content if you want HTML later)
+$body = "Naam: " . $naam . "\n";
+$body .= "E-mail: " . $emailFrom . "\n";
+$body .= "Telefoon: " . $telefoon . "\n\n";
+$body .= "Locatie klus: " . $locatie . "\n";
+$body .= "Soort schilderwerk: " . $soort . "\n";
+$body .= "Ruimte / onderdelen: " . $ruimte . "\n";
+$body .= "Planning: " . $planning . "\n\n";
+$body .= "Omschrijving:\n" . $omschrijving . "\n";
 
-Locatie klus: $locatie
-Soort schilderwerk: $soort
-Ruimte / onderdelen: $ruimte
-Planning: $planning
+// wrap long lines according to mail() recommendations
+$body = wordwrap($body, 70);
 
-Omschrijving:
-$omschrijving
-";
-
-$headers = "From: offerte-form <info@kleurfix.nl>\r\n";
-$headers .= "Reply-To: $emailFrom\r\n";
+// Build headers safely
+$headers  = "From: offerte-form <info@kleurfix.nl>\r\n";
+$headers .= "Reply-To: " . $emailFrom . "\r\n";
+$headers .= "MIME-Version: 1.0\r\n";
+$headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
 
 // Try to send mail
-$sent = mail($to, $subject, $body, $headers);
+$sent = mail($mailTo, $subject, $body, $headers);
 
 if ($sent) {
-    echo "Bedankt, $naam. We hebben uw aanvraag ontvangen en nemen zo snel mogelijk contact op.";
+    // For output to browser, escape user values
+    echo "Bedankt, " . escape_html($naam) . ". We hebben uw aanvraag ontvangen en nemen zo snel mogelijk contact op.";
 } else {
-    echo "Verzenden is niet gelukt. U kunt ons ook mailen op $to.";
+    // Keep error message generic in production
+    echo "Verzenden is niet gelukt. U kunt ons ook mailen op " . escape_html($mailTo) . ".";
 }
 ?>
