@@ -53,11 +53,14 @@
             <!-- Offerte formulier -->
             <section id="offerte" class="offerte-section">
               <form action="https://api.web3forms.com/submit" method="POST" class="offerte-form">
+                <input type="hidden" name="access_key" value="edbc8a85-0893-4bbf-ba23-f7069a1ed16b">
+                <input type="hidden" name="subject" value="Nieuwe offerte aanvraag">
+                <input type="hidden" name="redirect" value="https://yourwebsite.com/thank-you.html">
 
                 <div class="row gtr-uniform gtr-50">
                   <!-- Naam -->
                   <div class="col-6 col-12-xsmall">
-                    <input type="hidden" name="access_key" value="edbc8a85-0893-4bbf-ba23-f7069a1ed16b">
+
                     <label for="naam">Naam *</label>
                     <input type="text" name="naam" id="naam" required placeholder="Uw naam" />
                   </div>
