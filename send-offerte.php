@@ -52,7 +52,7 @@ if (!filter_var($emailFrom, FILTER_VALIDATE_EMAIL)) {
 }
 
 // Receiving address - change to your real address
-$mailTo = "info@kleurfix.nl";
+$mailTo = "-finfo@kleurfix.nl";
 $subject = "Nieuwe offerte-aanvraag via de website";
 
 // Build body (use the original raw values for content if you want HTML later)
@@ -69,13 +69,13 @@ $body .= "Omschrijving:\n" . $omschrijving . "\n";
 $body = wordwrap($body, 70);
 
 // Build headers safely
-$headers  = "From: offerte-form <info@kleurfix.nl>\r\n";
+$headers  = "From: offerte-form <-finfo@kleurfix.nl>\r\n";
 $headers .= "Reply-To: " . $emailFrom . "\r\n";
 $headers .= "MIME-Version: 1.0\r\n";
 $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
 
 // Try to send mail
-$sent = mail($mailTo, $subject, $body, $headers);
+$sent = mail($mailTo, $subject, $body, $headers, '-finfo@kleurfix.nl');
 
 if ($sent) {
     // For output to browser, escape user values
