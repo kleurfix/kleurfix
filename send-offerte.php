@@ -1,11 +1,25 @@
 <?php
+// optional: allow OPTIONS for CORS / AJAX preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
+    exit;
+}
+
+// debug log (remove later)
+file_put_contents(__DIR__ . '/debug-method.log', date('c') . " " . $_SERVER['REQUEST_METHOD'] . " " . $_SERVER['REQUEST_URI'] . PHP_EOL, FILE_APPEND);
+
 // Only allow POST (block direct access in browser)
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    header($_SERVER["SERVER_PROTOCOL"] . " 405 Method Not Allowed");
     header("Allow: POST");
-    http_response_code(405);
     echo "405 Not Allowed. Use POST.";
     exit;
 }
+
+// ... continue processing the POST
+
 
 // Helper to safely read a field and remove CR/LF (prevent header injection)
 function raw_field($name) {
@@ -52,7 +66,7 @@ if (!filter_var($emailFrom, FILTER_VALIDATE_EMAIL)) {
 }
 
 // Receiving address - change to your real address
-$mailTo = "-finfo@kleurfix.nl";
+$mailTo = "-f info@kleurfix.nl";
 $subject = "Nieuwe offerte-aanvraag via de website";
 
 // Build body (use the original raw values for content if you want HTML later)
@@ -69,19 +83,21 @@ $body .= "Omschrijving:\n" . $omschrijving . "\n";
 $body = wordwrap($body, 70);
 
 // Build headers safely
-$headers  = "From: offerte-form <-finfo@kleurfix.nl>\r\n";
+$headers  = "From: offerte-form <-f info@kleurfix.nl>\r\n";
 $headers .= "Reply-To: " . $emailFrom . "\r\n";
 $headers .= "MIME-Version: 1.0\r\n";
 $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
 
+function escape_html($str) {
+    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+}
+
 // Try to send mail
-$sent = mail($mailTo, $subject, $body, $headers, '-finfo@kleurfix.nl');
+$sent = mail($mailTo, $subject, $body, $headers, '-f info@kleurfix.nl');
 
 if ($sent) {
-    // For output to browser, escape user values
     echo "Bedankt, " . escape_html($naam) . ". We hebben uw aanvraag ontvangen en nemen zo snel mogelijk contact op.";
 } else {
-    // Keep error message generic in production
     echo "Verzenden is niet gelukt. U kunt ons ook mailen op " . escape_html($mailTo) . ".";
 }
 ?>
