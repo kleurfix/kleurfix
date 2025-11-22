@@ -1,5 +1,7 @@
 <?php
-// optional: allow OPTIONS for CORS / AJAX preflight
+// ===============================
+//  CORS (OPTIONS preflight)
+// ===============================
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -7,10 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// debug log (remove later)
-file_put_contents(__DIR__ . '/debug-method.log', date('c') . " " . $_SERVER['REQUEST_METHOD'] . " " . $_SERVER['REQUEST_URI'] . PHP_EOL, FILE_APPEND);
+// Debug logging (optional)
+file_put_contents(__DIR__ . '/debug-method.log',
+    date('c') . " " . $_SERVER['REQUEST_METHOD'] . " " . $_SERVER['REQUEST_URI'] . PHP_EOL,
+    FILE_APPEND
+);
 
-// Only allow POST (block direct access in browser)
+// Block non-POST direct access
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header($_SERVER["SERVER_PROTOCOL"] . " 405 Method Not Allowed");
     header("Allow: POST");
@@ -18,21 +23,22 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit;
 }
 
-// ... continue processing the POST
-
-
-// Helper to safely read a field and remove CR/LF (prevent header injection)
+// ===============================
+//  Helper functions
+// ===============================
 function raw_field($name) {
     return $_POST[$name] ?? "";
 }
 function sanitize_for_header($str) {
-    // remove CR and LF characters which could be used for header injection
     return trim(preg_replace("/[\r\n]+/", " ", $str));
 }
 function escape_html($str) {
     return htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 }
 
+// ===============================
+//  Read all fields
+// ===============================
 $naam         = sanitize_for_header(raw_field("naam"));
 $emailFrom    = sanitize_for_header(raw_field("email"));
 $telefoon     = sanitize_for_header(raw_field("telefoon"));
@@ -42,7 +48,7 @@ $ruimte       = sanitize_for_header(raw_field("ruimte"));
 $planning     = sanitize_for_header(raw_field("planning"));
 $omschrijving = sanitize_for_header(raw_field("omschrijving"));
 
-// Basic required check
+// Required fields check
 $required = [
     "naam" => $naam,
     "email" => $emailFrom,
@@ -59,45 +65,75 @@ foreach ($required as $fieldName => $value) {
     }
 }
 
-// Validate email format
+// Email validation
 if (!filter_var($emailFrom, FILTER_VALIDATE_EMAIL)) {
     echo "Ongeldig e-mailadres opgegeven.";
     exit;
 }
 
-// Receiving address - change to your real address
-$mailTo = "-f info@kleurfix.nl";
-$subject = "Nieuwe offerte-aanvraag via de website";
+// ===============================
+//  PHPMailer initialization
+// ===============================
+require __DIR__ . '/vendor/autoload.php';       // <-- adjust path!
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-// Build body (use the original raw values for content if you want HTML later)
-$body = "Naam: " . $naam . "\n";
-$body .= "E-mail: " . $emailFrom . "\n";
-$body .= "Telefoon: " . $telefoon . "\n\n";
-$body .= "Locatie klus: " . $locatie . "\n";
-$body .= "Soort schilderwerk: " . $soort . "\n";
-$body .= "Ruimte / onderdelen: " . $ruimte . "\n";
-$body .= "Planning: " . $planning . "\n\n";
-$body .= "Omschrijving:\n" . $omschrijving . "\n";
+$mail = new PHPMailer(true);
 
-// wrap long lines according to mail() recommendations
-$body = wordwrap($body, 70);
+try {
 
-// Build headers safely
-$headers  = "From: offerte-form <-f info@kleurfix.nl>\r\n";
-$headers .= "Reply-To: " . $emailFrom . "\r\n";
-$headers .= "MIME-Version: 1.0\r\n";
-$headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+    // Use sendmail (same as `mail()` behind the scenes)
+    $mail->isSendmail();
 
-function escape_html($str) {
-    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
-}
+    // FROM
+    $mail->setFrom('info@kleurfix.nl', 'Kleurfix Offerte');  // change if needed
 
-// Try to send mail
-$sent = mail($mailTo, $subject, $body, $headers, '-f info@kleurfix.nl');
+    // TO (your receiving address)
+    $mail->addAddress('info@kleurfix.nl', 'Kleurfix');
 
-if ($sent) {
+    // Reply-to customer
+    $mail->addReplyTo($emailFrom, $naam);
+
+    // Subject
+    $mail->Subject = "Nieuwe offerte-aanvraag via de website";
+
+    // ===============================
+    //  Build HTML body
+    // ===============================
+    $htmlBody = "
+        <h3>Nieuwe offerte-aanvraag</h3>
+        <p><strong>Naam:</strong> " . escape_html($naam) . "</p>
+        <p><strong>E-mail:</strong> " . escape_html($emailFrom) . "</p>
+        <p><strong>Telefoon:</strong> " . escape_html($telefoon) . "</p>
+        <p><strong>Locatie klus:</strong> " . escape_html($locatie) . "</p>
+        <p><strong>Soort schilderwerk:</strong> " . escape_html($soort) . "</p>
+        <p><strong>Ruimte / onderdelen:</strong> " . escape_html($ruimte) . "</p>
+        <p><strong>Planning:</strong> " . escape_html($planning) . "</p>
+        <p><strong>Omschrijving:</strong><br>" . nl2br(escape_html($omschrijving)) . "</p>
+    ";
+
+    // Text fallback
+    $plainBody =
+        "Nieuwe offerte-aanvraag:\n\n" .
+        "Naam: $naam\n" .
+        "E-mail: $emailFrom\n" .
+        "Telefoon: $telefoon\n\n" .
+        "Locatie: $locatie\n" .
+        "Soort: $soort\n" .
+        "Ruimte: $ruimte\n" .
+        "Planning: $planning\n\n" .
+        "Omschrijving:\n$omschrijving\n";
+
+    $mail->isHTML(true);
+    $mail->Body = $htmlBody;
+    $mail->AltBody = $plainBody;
+
+    // Send it
+    $mail->send();
+
     echo "Bedankt, " . escape_html($naam) . ". We hebben uw aanvraag ontvangen en nemen zo snel mogelijk contact op.";
-} else {
-    echo "Verzenden is niet gelukt. U kunt ons ook mailen op " . escape_html($mailTo) . ".";
+
+} catch (Exception $e) {
+    echo "Verzenden is niet gelukt. Fout: " . escape_html($mail->ErrorInfo);
 }
 ?>
