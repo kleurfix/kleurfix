@@ -1,13 +1,8 @@
 <!DOCTYPE HTML>
-<!--
-	Landed by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
 <html>
 
 <head>
-  <title>Elements - Landed by HTML5 UP</title>
+  <title>KleurFix – Offerte aanvragen</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <link rel="stylesheet" href="assets/css/main.css" />
@@ -18,178 +13,155 @@
 
 <body class="is-preload">
   <div id="page-wrapper">
-    <title>KleurFix – Offerte aanvragen</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    <link rel="stylesheet" href="assets/css/main.css" />
-    <noscript>
-      <link rel="stylesheet" href="assets/css/noscript.css" />
-    </noscript>
-    </head>
 
-    <body class="is-preload">
-      <div id="page-wrapper">
+    <!-- Header -->
+    <header id="header">
+      <h1 id="logo"><a href="index.html">KleurFix</a></h1>
+      <nav id="nav">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="#offerte" class="button primary">Offerte aanvragen</a></li>
+        </ul>
+      </nav>
+    </header>
 
-        <!-- Header -->
-        <header id="header">
-          <h1 id="logo"><a href="index.html">KleurFix</a></h1>
-          <nav id="nav">
-            <ul>
-              <li><a href="index.html">Home</a></li>
-              <li><a href="#offerte" class="button primary">Offerte aanvragen</a></li>
-            </ul>
-          </nav>
+    <!-- Main -->
+    <div id="main" class="wrapper style1">
+      <div class="container">
+        <header class="major">
+          <h2>Vrijblijvende offerte aanvragen</h2>
+          <p>Vertel ons kort welke schilderwerkzaamheden u wilt laten uitvoeren.<br>
+            Wij nemen persoonlijk contact met u op.</p>
         </header>
 
-        <!-- Main -->
-        <div id="main" class="wrapper style1">
-          <div class="container">
-            <header class="major">
-              <h2>Vrijblijvende offerte aanvragen</h2>
-              <p>Vertel ons kort welke schilderwerkzaamheden u wilt laten uitvoeren.<br>
-                Wij nemen persoonlijk contact met u op.</p>
-            </header>
+        <!-- Offerte formulier -->
+        <section id="offerte" class="offerte-section">
+          <form action="send-offerte.php" method="POST" class="offerte-form">
 
-            <!-- Offerte formulier -->
-            <section id="offerte" class="offerte-section">
-              <form action="send-offerte.php" method="POST" class="offerte-form">
-                <input type="hidden" name="access_key" value="edbc8a85-0893-4bbf-ba23-f7069a1ed16b">
-                <input type="hidden" name="subject" value="Nieuwe offerte aanvraag">
-                <input type="hidden" name="redirect" value="https://kleurfix.nl/thanks.html">
+            <div class="row gtr-uniform gtr-50">
 
-                <div class="row gtr-uniform gtr-50">
-                  <!-- Naam -->
-                  <div class="col-6 col-12-xsmall">
-
-                    <label for="naam">Naam *</label>
-                    <input type="text" name="naam" id="naam" required placeholder="Uw naam" />
-                  </div>
-
-                  <!-- Telefoon -->
-                  <div class="col-6 col-12-xsmall">
-                    <label for="telefoon">Telefoonnummer *</label>
-                    <input type="tel" name="telefoon" id="telefoon" required placeholder="06 ..." style="
-                      background-color: #000;
-                      color: #fff;
-                      border: 1px solid #444;
-                      border-radius: 6px;
-                      padding: 10px 12px;
-                      width: 100%;
-                    " />
-                  </div>
-
-                  <!-- Email -->
-                  <div class="col-12">
-                    <label for="email">E-mail *</label>
-                    <input type="email" name="email" id="email" required placeholder="uw@email.nl" />
-                  </div>
-
-                  <!-- Locatie -->
-                  <div class="col-12">
-                    <label for="locatie">Locatie van de klus (plaats / postcode) *</label>
-                    <input type="text" name="locatie" id="locatie" required placeholder="Bijv. Assen, 9401" />
-                  </div>
-
-                  <!-- Soort schilderwerk -->
-                  <div class="col-12">
-                    <label for="soort">Soort schilderwerk *</label>
-                    <select name="soort" id="soort" required>
-                      <option value="">- Kies een optie -</option>
-                      <option value="binnen">Binnenschilderwerk</option>
-                      <option value="buiten">Buitenschilderwerk</option>
-                      <option value="latex">Latex spuiten</option>
-                      <option value="kozijnen">Kozijnen / houtwerk</option>
-                      <option value="anders">Anders / weet ik niet</option>
-                    </select>
-                  </div>
-
-                  <!-- Ruimte / onderdelen -->
-                  <div class="col-12">
-                    <label for="ruimte">Welke ruimte / onderdelen?</label>
-                    <input type="text" name="ruimte" id="ruimte" placeholder="Bijv. woonkamer en traphek" />
-                  </div>
-
-                  <!-- Planning -->
-                  <div class="col-12">
-                    <label for="planning">Wanneer wilt u starten?</label>
-                    <select name="planning" id="planning">
-                      <option value="snel">Zo snel mogelijk</option>
-                      <option value="binnen1maand">Binnen 1 maand</option>
-                      <option value="flexibel">Flexibel / geen haast</option>
-                    </select>
-                  </div>
-
-                  <!-- Omschrijving -->
-                  <div class="col-12">
-                    <label for="omschrijving">Korte omschrijving van de klus *</label>
-                    <textarea name="omschrijving" id="omschrijving" rows="5" required placeholder="Bijv. Woonkamer (32 m²) laten spuiten in RAL9016. Kleine beschadigingen eerst herstellen.
-(Ral 9016 is een modernere kleur en oogt frisser en witter dan Ral 9010.)"></textarea>
-                  </div>
-
-                  <!-- Checkbox akkoord -->
-                  <div class="col-12">
-                    <input type="checkbox" id="akkoord" name="akkoord" required />
-                    <label for="akkoord">Ik wil graag een vrijblijvende prijsindicatie/offerte ontvangen.</label>
-                  </div>
-
-                  <!-- Verstuur knop -->
-                  <div class="col-12">
-                    <ul class="actions">
-                      <li><input type="submit" value="Verzend aanvraag" class="primary" /></li>
-                    </ul>
-                  </div>
-
-                </div>
-              </form>
-            </section>
-
-            <!-- Eventueel extra info / USP's -->
-            <section class="after-form">
-              <div class="row gtr-50 gtr-uniform">
-                <div class="col-4 col-12-xsmall">
-                  <h4><span class="icon solid fa-check-circle"></span> Binnen & buitenwerk</h4>
-                  <p>Strak schilderwerk voor muren, plafonds, kozijnen en deuren.</p>
-                </div>
-                <div class="col-4 col-12-xsmall">
-                  <h4><span class="icon solid fa-spray-can"></span> Latex spuitwerk</h4>
-                  <p>Super egale afwerking in korte tijd. Ideaal bij renovatie of nieuwbouw.</p>
-                </div>
-                <div class="col-4 col-12-xsmall">
-                  <h4><span class="icon solid fa-shield-alt"></span> Duurzame kwaliteit</h4>
-                  <p>Wij gebruiken professionele verfmerken voor een langdurig resultaat.</p>
-                </div>
+              <!-- Naam -->
+              <div class="col-6 col-12-xsmall">
+                <label for="naam">Naam *</label>
+                <input type="text" name="naam" id="naam" required placeholder="Uw naam" />
               </div>
-            </section>
 
+              <!-- Telefoon -->
+              <div class="col-6 col-12-xsmall">
+                <label for="telefoon">Telefoonnummer *</label>
+                <input type="tel" name="telefoon" id="telefoon" required placeholder="06 ..." />
+              </div>
+
+              <!-- Email -->
+              <div class="col-12">
+                <label for="email">E-mail *</label>
+                <input type="email" name="email" id="email" required placeholder="uw@email.nl" />
+              </div>
+
+              <!-- Locatie -->
+              <div class="col-12">
+                <label for="locatie">Locatie van de klus (plaats / postcode) *</label>
+                <input type="text" name="locatie" id="locatie" required placeholder="Bijv. Assen, 9401" />
+              </div>
+
+              <!-- Soort schilderwerk -->
+              <div class="col-12">
+                <label for="soort">Soort schilderwerk *</label>
+                <select name="soort" id="soort" required>
+                  <option value="">- Kies een optie -</option>
+                  <option value="binnen">Binnenschilderwerk</option>
+                  <option value="buiten">Buitenschilderwerk</option>
+                  <option value="latex">Latex spuiten</option>
+                  <option value="kozijnen">Kozijnen / houtwerk</option>
+                  <option value="anders">Anders / weet ik niet</option>
+                </select>
+              </div>
+
+              <!-- Ruimte -->
+              <div class="col-12">
+                <label for="ruimte">Welke ruimte / onderdelen?</label>
+                <input type="text" name="ruimte" id="ruimte" placeholder="Bijv. woonkamer en traphek" />
+              </div>
+
+              <!-- Planning -->
+              <div class="col-12">
+                <label for="planning">Wanneer wilt u starten?</label>
+                <select name="planning" id="planning">
+                  <option value="snel">Zo snel mogelijk</option>
+                  <option value="binnen1maand">Binnen 1 maand</option>
+                  <option value="flexibel">Flexibel / geen haast</option>
+                </select>
+              </div>
+
+              <!-- Omschrijving -->
+              <div class="col-12">
+                <label for="omschrijving">Korte omschrijving van de klus *</label>
+                <textarea name="omschrijving" id="omschrijving" rows="5" required
+                  placeholder="Bijv. Woonkamer (32 m²) laten spuiten in RAL9016. Kleine beschadigingen eerst herstellen."></textarea>
+              </div>
+
+              <!-- Checkbox akkoord -->
+              <div class="col-12">
+                <input type="checkbox" id="akkoord" name="akkoord" required />
+                <label for="akkoord">Ik wil graag een vrijblijvende prijsindicatie/offerte ontvangen.</label>
+              </div>
+
+              <!-- Verstuur knop -->
+              <div class="col-12">
+                <ul class="actions">
+                  <li><input type="submit" value="Verzend aanvraag" class="primary" /></li>
+                </ul>
+              </div>
+
+            </div>
+          </form>
+        </section>
+
+        <!-- USP's -->
+        <section class="after-form">
+          <div class="row gtr-50 gtr-uniform">
+            <div class="col-4 col-12-xsmall">
+              <h4><span class="icon solid fa-check-circle"></span> Binnen & buitenwerk</h4>
+              <p>Strak schilderwerk voor muren, plafonds, kozijnen en deuren.</p>
+            </div>
+            <div class="col-4 col-12-xsmall">
+              <h4><span class="icon solid fa-spray-can"></span> Latex spuitwerk</h4>
+              <p>Super egale afwerking in korte tijd. Ideaal bij renovatie of nieuwbouw.</p>
+            </div>
+            <div class="col-4 col-12-xsmall">
+              <h4><span class="icon solid fa-shield-alt"></span> Duurzame kwaliteit</h4>
+              <p>Wij gebruiken professionele verfmerken voor een langdurig resultaat.</p>
+            </div>
           </div>
-        </div>
-
-        <!-- Footer -->
-        <footer id="footer">
-          <ul class="icons">
-            <!-- You can put your real socials here later -->
-            <li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
-            <li><a href="#" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
-          </ul>
-          <ul class="copyright">
-            <li>&copy; KleurFix. Alle rechten voorbehouden.</li>
-            <li>Schilderwerk binnen & buiten</li>
-          </ul>
-        </footer>
+        </section>
 
       </div>
+    </div>
 
+    <!-- Footer -->
+    <footer id="footer">
+      <ul class="icons">
+        <li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
+        <li><a href="#" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+      </ul>
+      <ul class="copyright">
+        <li>&copy; KleurFix. Alle rechten voorbehouden.</li>
+        <li>Schilderwerk binnen & buiten</li>
+      </ul>
+    </footer>
 
-      <!-- Scripts -->
-      <script src="assets/js/jquery.min.js"></script>
-      <script src="assets/js/jquery.scrolly.min.js"></script>
-      <script src="assets/js/jquery.dropotron.min.js"></script>
-      <script src="assets/js/jquery.scrollex.min.js"></script>
-      <script src="assets/js/browser.min.js"></script>
-      <script src="assets/js/breakpoints.min.js"></script>
-      <script src="assets/js/util.js"></script>
-      <script src="assets/js/main.js"></script>
+  </div>
 
-    </body>
+  <!-- Scripts -->
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/jquery.scrolly.min.js"></script>
+  <script src="assets/js/jquery.dropotron.min.js"></script>
+  <script src="assets/js/jquery.scrollex.min.js"></script>
+  <script src="assets/js/browser.min.js"></script>
+  <script src="assets/js/breakpoints.min.js"></script>
+  <script src="assets/js/util.js"></script>
+  <script src="assets/js/main.js"></script>
+
+</body>
 
 </html>
